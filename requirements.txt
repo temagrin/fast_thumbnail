@@ -1,0 +1,4 @@
+aiohttp==2.2.3
+asyncpg==0.12.0
+uvloop==0.8.0
+Pillow-SIMD==4.1.1.post0
