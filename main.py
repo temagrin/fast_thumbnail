@@ -58,7 +58,7 @@ def go_watermark(origin_image, x, y):
     if dark > light:
         suffix = 'light'
     try:
-        watermark = Image.open(os.path.join(WATERMARKS_PATH, 'watermark_{}.png'.format(suffix)))
+        watermark = Image.open(os.path.join(WATERMARKS_PATH, f'watermark_{suffix}.png'))
     except FileNotFoundError:
         print('NOT found watermark image "watermark_{}.png"'.format(suffix))
         print('RETURNED ORIGINAL IMAGE!!!')
@@ -147,9 +147,9 @@ async def handle(request):
     resolution = match_info.get('resolution', None)
     sort_num = match_info.get('sort_num', None)
     product_id = match_info.get('product_id', None)
-    hashed = hashlib.md5("{}-{}-{}-{}".format(client, resolution, sort_num, product_id).encode('utf-8')).hexdigest()
+    hashed = hashlib.md5(f'/{client}/{resolution}/{sort_num}/{product_id}').encode('utf-8').hexdigest()
     dir_path = os.path.join(THUMBNAIL_ROOT, hashed[:2], hashed[-2:])
-    file_path = os.path.join(dir_path, '{}.jpg'.format(hashed))
+    file_path = os.path.join(dir_path, f'{hashed}.jpg')
     try:
         with open(file_path, "rb") as f:  # пробуем открыть тумбнейл с диска
             return web.Response(body=f.read(), content_type="image/jpeg")
@@ -163,7 +163,7 @@ async def handle(request):
 async def init_app():
     web_app = web.Application()
     web_app['pool'] = await asyncpg.create_pool(dsn=DSN)
-    web_app.router.add_get('/{client}/{resolution}/{sort_num}/{product_id}.jpg', handle)
+    web_app.router.add_get(f'/{client}/{resolution}/{sort_num}/{product_id}.jpg', handle)
     return web_app
 
 
